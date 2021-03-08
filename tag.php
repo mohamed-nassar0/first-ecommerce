@@ -1,27 +1,14 @@
 <?php
 session_start();
 
+if (isset($_SESSION['user_id']) && $_SESSION['admin'] == 1) {
 $page_name = 'Tag ' . $_GET['tag'];
 include 'init.php';
-if (isset($_GET['tag']) && !empty($_GET['tag'])) {
+if (isset($_GET['tag'])) {
     $tag = $_GET['tag'];
 } else {
-    $tag = 'emptyyyyy';
+    $tag = '';
 }
-?>
-<!-- start search box -->
-<div class='container'>
-    <div class='search-box'>
-        <form method='get' action='tag.php' class='search-box'>
-            <input type='text' name='tag' placeholder='Search' />
-            <input type='submit' value='Search' />
-        </form>
-    </div>
-</div>
-<!-- end search box -->
-
-<div class='margin-top-40'></div> <!-- to make margin top 40px -->
-<?php
 
 $all_items = all_data('items');
 echo '<div class="container">'; // start container div
@@ -31,6 +18,11 @@ echo '<div class="container">'; // start container div
             $exist = '';
             echo '<div class="col-xs-12 col-sm-12 col-md-4 col-lg-3">';
                 echo '<div class="item-box">';
+
+                echo '<div class="control-item">';
+                    echo '<a class="btn btn-info" href="items.php?page=edit&id=' . $my_search_item['item_id'] . '">Edit</a>';
+                    echo '<a class="btn btn-danger" href="items.php?page=delete&id=' . $my_search_item['item_id'] . '">Delete</a>';
+                echo '</div>'; // end control-item div  
 
                 echo '<img src="data/uploads/item_pictures/' . $my_search_item['item_picture'] . '" alt="Item Picture" />';    
                 echo '<h3><a href="product.php?id=' . $my_search_item['item_id'] . '">' . $my_search_item['item_name'] . '</a></h3>';
@@ -48,10 +40,19 @@ echo '<div class="container">'; // start container div
     echo '</div>'; // end row div
 echo '</div>'; // end container div
 if (!isset($exist)) {
-    echo '<div class="container alert alert-danger">No Items Found</div>';
+    echo 'No Results Exist';
+}
+
+
+foreach (all_data('items', 'uploader= ' . $_SESSION['user_id'], 'item_id', 'DESC') as $item) {
+   
+    
 }
 
 
 
-
 include $template . 'footer.php';
+} else {
+    header('location:../index.php');
+    exit;
+}
